@@ -4,12 +4,20 @@
 
 {% block content %}
 <h1>Posts Page</h1>
-<div class="card">
-    {% for post in posts %}
-        <a href="{% url 'accounts:profile' post.user.id%}" class="card-body">{{post.user}}</a>
-        <a href="{{post.get_absolute_url}}" class="card-body">{{post.slug}}</a>
-    {% endfor %}
-</div>
+{% for post in posts %}
+<div class="card" style="width: 18rem;">
+    
+    
+        
+    
+        
+    <div class="card-body">
+      <p class="card-text">{{post.body}}</p>
+      <a href="{% url 'accounts:profile' post.user.id%}" class="btn btn-primary">{{post.user}}</a>
+    </div>
+    
+  </div>
+  {% endfor %}
     
 {% endblock %}
     
