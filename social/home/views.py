@@ -1,12 +1,10 @@
 from typing import Any
-from django import http
-from django.http.response import HttpResponse
 from django.shortcuts import render, redirect
 from django.views import View
 from .models import Post
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from .forms import PostUpdateForm
+from .forms import PostCreateUpdateForm
 from django.utils.text import slugify
 
 
@@ -32,7 +30,7 @@ class PostDeleteView(LoginRequiredMixin,View):
         return redirect('home:home')
 
 class PostUpdateView(LoginRequiredMixin, View):
-    form_class=PostUpdateForm
+    form_class=PostCreateUpdateForm
 
     def setup(self, request, *args: Any, **kwargs: Any):
         self.post_instance=Post.objects.get(id=kwargs['id'])
@@ -62,3 +60,21 @@ class PostUpdateView(LoginRequiredMixin, View):
             return redirect('home:home')
         messages.error(request,'invalid data','danger')
         return redirect('home:detail', post.id, post.slug)
+    
+
+class PostCreateView(LoginRequiredMixin,View):
+    form_class=PostCreateUpdateForm
+
+    def get(self, request):
+        form=self.form_class
+        return render(request,'home/create_post.html',{'form':form})
+    
+    def post(self, request):
+        form=self.form_class(request.POST)
+        if form.is_valid():
+            cd=form.cleaned_data
+            post=Post.objects.create(user=request.user,body=cd['body'],slug=slugify(cd['body'][:30]))
+            post.save()
+            messages.success(request,'post created successfully', 'success')
+            return redirect('accounts:profile', post.user.id)
+        return render(request,'home/create_post.html',{'form':form})

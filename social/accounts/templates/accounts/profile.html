@@ -3,6 +3,14 @@
 
 {% block content %}
 <h2 class="text-center">{{user.username}}</h2>
+
+{% if request.user.id == user.id %}
+    <a href="{% url 'home:create_post' %}" class="btn btn-primary">Create Post</a>
+    
+{% endif %}
+    
+
+
 {% for post in posts %}
     <a href="{{post.get_absolute_url}}">{{post.slug}}</a>
     <p>{{post.created_at|date:' Y M D'}}</p>
